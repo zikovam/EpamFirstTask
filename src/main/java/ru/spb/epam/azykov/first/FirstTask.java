@@ -64,7 +64,10 @@ public class FirstTask implements ISolver {
 
             public int compare (String s1, String s2) {
 
-                return s1.length () - s2.length ();
+                if (s1.length () == s2.length ())
+                    return s1.compareTo (s2);
+                else
+                    return (s1.length () - s2.length ());
             }
         }
 
@@ -94,24 +97,37 @@ public class FirstTask implements ISolver {
 //    Ввести N слов. Найти слово, в котором число различных символов минимально. Если таких слов несколько, найти первое из них.
     public void task4 () {
         int n; //количество строк
-        String[] word;
+        String[] words;
         String text;
         Scanner scan = new Scanner (System.in);
         if (scan.hasNextInt ()) {
             n = Integer.parseInt (scan.nextLine ());
             text = scan.nextLine ();
-            word = text.split (" ", n);
-            int indexMinCharVar = 1;
-            int sizeMinCharVar = new HashSet<String> (Arrays.asList (word[0].split (""))).size ();
-            for (int i = 1; i < n; i++) {
-                Set<String> set = new HashSet<String> (Arrays.asList (word[i].split ("")));
+            words = text.split (" ", n);
+
+            String wordMinCharVar = words[0];
+            int sizeMinCharVar = new HashSet<String> (Arrays.asList (words[0].split (""))).size ();
+
+            //другой вариант реализации
+//            for (int i = 1; i < words.length; i++) {
+//                Set<String> set = new HashSet<String> (Arrays.asList (words[i].split ("")));
+//                if (set.size () < sizeMinCharVar) {
+//                    //System.out.println("Слово - " + word[i]);
+//                    indexMinCharVar = i;
+//                    sizeMinCharVar = set.size ();
+//                }
+//            }
+
+            for (String word :
+                    words) {
+                Set<String> set = new HashSet<String> (Arrays.asList (word.split ("")));
                 if (set.size () < sizeMinCharVar) {
                     //System.out.println("Слово - " + word[i]);
-                    indexMinCharVar = i;
+                    wordMinCharVar = word;
                     sizeMinCharVar = set.size ();
                 }
             }
-            System.out.println (word[indexMinCharVar]);
+            System.out.println (wordMinCharVar);
         }
     }
 
@@ -172,30 +188,47 @@ public class FirstTask implements ISolver {
                     }
                 }
                 //System.out.println("Word = "+word+": count = "+count);
-                if ((word.length () - 1 == count) && (word.length () > 1)) {
-                    System.out.print (word);
+                if ((word.length () - 1 == count) && (word.length () > 1) && (wordCount == 0)) {
+                    System.out.println (word);
                     wordCount++;
                 }
 
             }
             if (wordCount == 0)
-                System.out.print ("NOT FOUND");
+                System.out.println ("NOT FOUND");
         }
     }
 
 //    Ввести N слов. Найти слова, состоящие только из различных символов.
 //    В случае, если слово встречается более одного раза - вывести его единожды.
-//    ТУТ НЕ УЧИТЫВАЕТСЯ ЧТО СЛОВО МОЖЕТ ВСТРЕТИТЬСЯ НЕСКОЛЬКО РАЗ
     public void task7 () {
         Scanner scan = new Scanner (System.in);
         int n = Integer.parseInt (scan.nextLine ());
         String text = scan.nextLine ();
+        //String text2 = new HashSet<String> (Arrays.asList (text.split ("\\s/,"))).toString ();
+        //System.out.println (text2);
+        LinkedHashSet<String> words = new LinkedHashSet<String> (n);
+        boolean isThereAWord = false;
         for (String word :
                 text.split (" ", n)) {
             int count = new HashSet<String> (Arrays.asList (word.split (""))).size () - 1;
-            if (word.length () == count)
-                System.out.print (word + "\t");
+            if (word.length () == count) {
+                words.add (word);
+                isThereAWord = true;
+                //System.out.print (word + "\t");
+            }
         }
+
+        if (isThereAWord) {
+            for (int i = 0; i < words.size ()-1; i++) {
+                System.out.print (words.toArray ()[i] + " ");
+            }
+            System.out.println (words.toArray ()[words.size ()-1]);
+        }
+        else {
+            System.out.println ("NOT FOUND");
+        }
+
     }
 
 //    Ввести N слов. Помимо обычных слов, во входной последовательности могут встречаться целые числа.
@@ -206,6 +239,7 @@ public class FirstTask implements ISolver {
         int n = Integer.parseInt (scan.nextLine ());
         String text = scan.nextLine ();
         int countPalindromeNum = 0;
+        String neededPalindrome = null;
         for (String word :
                 text.split (" ", n)) {
             Pattern isItNumber = Pattern.compile ("\\d+");
@@ -214,13 +248,17 @@ public class FirstTask implements ISolver {
                 //System.out.println(word);
                 if (word.equals ( new StringBuilder(word).reverse().toString())){
                     countPalindromeNum++;
-                    if (countPalindromeNum == 2)
-                        System.out.print (word);
+                    if (countPalindromeNum == 1)
+                        neededPalindrome = word;
+                    else if (countPalindromeNum == 2)
+                        System.out.println (word);
                 }
             }
         }
         if (countPalindromeNum == 0)
-            System.out.print ("NOT FOUND");
+            System.out.println ("NOT FOUND");
+        if (countPalindromeNum == 1)
+            System.out.println (neededPalindrome);
     }
 
 //    Написать программу, которая выводит числа от 1 до N^2 в виде матрицы NxN слева направо и сверху вниз.
@@ -231,10 +269,12 @@ public class FirstTask implements ISolver {
         if (n > 0) {
             int counter = 1;
             for (int i = 1; i <= n; i++) {
-                for (int j = 1; j <= n; j++) {
+                for (int j = 1; j < n; j++) {
                     System.out.print (counter + "\t");
                     counter++;
                 }
+                System.out.print (counter);
+                counter++;
                 System.out.println ();
             }
         }
@@ -244,19 +284,19 @@ public class FirstTask implements ISolver {
 //    Параметры уравнения должны задаваться с командной строки.
     public void task10 () {
         Scanner scan = new Scanner (System.in);
-        int a = scan.nextInt ();
-        int b = scan.nextInt ();
-        int c = scan.nextInt ();
-        int discriminant = b * b - 4 * a * c;
+        double a = scan.nextInt ();
+        double b = scan.nextInt ();
+        double c = scan.nextInt ();
+        double discriminant = b * b - 4 * a * c;
         if (discriminant < 0)
-            System.out.print ("No solution");
+            System.out.println ("No solution");
         else if (discriminant == 0) {
-            double x = (double) -b / (2 * a);
-            System.out.print ("One solution: " + x);
+            double x = Math.round ((-b / (2 * a))*100);
+                System.out.println ("One solution: " + x/100);
         } else if (discriminant > 0) {
-            double x1 = (-b - Math.sqrt (b * b - 4 * a * c)) / (2 * a);
-            double x2 = (-b + Math.sqrt (b * b - 4 * a * c)) / (2 * a);
-            System.out.print ("Two solutions: " + x1 + "\t" + x2);
+            double x1 = Math.round (((-b - Math.sqrt (b * b - 4 * a * c)) / (2 * a))*100);
+            double x2 = Math.round (((-b + Math.sqrt (b * b - 4 * a * c)) / (2 * a))*100);
+            System.out.println ("Two solutions: " + x1/100 + ", "+ x2/100);
         }
     }
 
@@ -264,48 +304,58 @@ public class FirstTask implements ISolver {
 //    При реализации использовать оператор switch. Осуществить проверку корректности ввода числа.
     public void task11 () {
         Scanner scan = new Scanner (System.in);
-        int n = Integer.parseInt (scan.nextLine ());
-        switch (n) {
-            case (1):
-                System.out.println ("January");
-                break;
-            case (2):
-                System.out.println ("February");
-                break;
-            case (3):
-                System.out.println ("March");
-                break;
-            case (4):
-                System.out.println ("April");
-                break;
-            case (5):
-                System.out.println ("May");
-                break;
-            case (6):
-                System.out.println ("June");
-                break;
-            case (7):
-                System.out.println ("July");
-                break;
-            case (8):
-                System.out.println ("August");
-                break;
-            case (9):
-                System.out.println ("September");
-                break;
-            case (10):
-                System.out.println ("October");
-                break;
-            case (11):
-                System.out.println ("November");
-                break;
-            case (12):
-                System.out.println ("December");
-                break;
-            default:
+        String n = scan.nextLine ();
+        if ((n.length () == 1)||(n.length () == 2)) {
+            Pattern isItNumber = Pattern.compile ("\\d{1,2}");
+            Matcher mIsItNumber = isItNumber.matcher (n);
+            if (mIsItNumber.find ()) {
+                switch (Integer.parseInt (n)) {
+                    case (1):
+                        System.out.println ("January");
+                        break;
+                    case (2):
+                        System.out.println ("February");
+                        break;
+                    case (3):
+                        System.out.println ("March");
+                        break;
+                    case (4):
+                        System.out.println ("April");
+                        break;
+                    case (5):
+                        System.out.println ("May");
+                        break;
+                    case (6):
+                        System.out.println ("June");
+                        break;
+                    case (7):
+                        System.out.println ("July");
+                        break;
+                    case (8):
+                        System.out.println ("August");
+                        break;
+                    case (9):
+                        System.out.println ("September");
+                        break;
+                    case (10):
+                        System.out.println ("October");
+                        break;
+                    case (11):
+                        System.out.println ("November");
+                        break;
+                    case (12):
+                        System.out.println ("December");
+                        break;
+                    default:
+                        System.out.println ("INCORRECT INPUT DATA");
+                        break;
+                }
+            }
+            else
                 System.out.println ("INCORRECT INPUT DATA");
-                break;
         }
+        else
+            System.out.println ("INCORRECT INPUT DATA");
     }
 
 //    Упорядочить строки матрицы размерности N в порядке возрастания значений элементов k-го столбца.0
@@ -393,8 +443,8 @@ public class FirstTask implements ISolver {
     public void task14 () {
         Scanner scan = new Scanner (System.in);
         int n = Integer.parseInt (scan.nextLine ());
-        int maxLength = 1;
-        int nowLength = 1;
+        int maxLength = 0;
+        int nowLength = 0;
         int[] array = new int[n];
 
         array[0] = scan.nextInt ();
@@ -403,16 +453,22 @@ public class FirstTask implements ISolver {
             if (array[i]>array[i-1]) {
                 nowLength++;
             }
-            else if (array[i]<=array[i-1]){
-                maxLength = nowLength;
-                nowLength = 1;
+            else {
+                if (maxLength < nowLength + 1) {
+                    maxLength = nowLength + 1;
+                    nowLength = 0;
+                }
             }
         }
+
+        if (maxLength < nowLength + 1) {
+            maxLength = nowLength + 1;
+        }
+
         System.out.println (maxLength);
     }
 
 //    Найти сумму элементов матрицы, расположенных между первым и вторым положительными элементами каждой строки.
-    //если в конце строки нет положительного - не считать эту сумму?
     public void task15 () {
         Scanner scan = new Scanner (System.in);
         int n = Integer.parseInt (scan.nextLine ());
@@ -428,11 +484,10 @@ public class FirstTask implements ISolver {
 
                 if ((matrix[i][j]>0) && (firstPositive))
                     secondPositive = true;
-
-                if ((firstPositive) && (!secondPositive)){
+                else if ((firstPositive) && (!secondPositive)){
                     sum += matrix[i][j];
                 }
-                if ((matrix[i][j]>0) && (!firstPositive))
+                else if ((matrix[i][j]>0) && (!firstPositive))
                     firstPositive = true;
             }
             if (firstPositive && !secondPositive)
@@ -442,7 +497,9 @@ public class FirstTask implements ISolver {
             firstPositive = false;
             secondPositive = false;
             sumAll += sum;
+            sum = 0;
         }
+
         System.out.println (sumAll);
     }
 
@@ -765,29 +822,35 @@ public class FirstTask implements ISolver {
         int[][] matrix = new int[n][n];
         int[] strMin = new int [n];
 
-        for (int num :
-             strMin) {
-            num = 1000;
+        if (n == 1){
+            scan.nextInt ();
+            System.out.println (1);
         }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                matrix[i][j] = scan.nextInt ();
-                if (matrix[i][j] < strMin[i])
-                    strMin[i] = matrix[i][j];
+        else {
+            for (int num :
+                    strMin) {
+                num = 1000;
             }
-        }
 
-        int counter = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (matrix[i][j] == strMin[i])
-                    if (isThisSedlovaya (matrix, strMin[i], j, i))
-                       counter++;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = scan.nextInt ();
+                    if (matrix[i][j] < strMin[i])
+                        strMin[i] = matrix[i][j];
+                }
             }
-        }
 
-        System.out.println (counter);
+            int counter = 0;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (matrix[i][j] == strMin[i])
+                        if (isThisSedlovaya (matrix, strMin[i], j, i))
+                            counter++;
+                }
+            }
+
+            System.out.println (counter);
+        }
     }
 
         private boolean isThisSedlovaya (int[][]matrix, int numb, int column, int row){

@@ -8,6 +8,6 @@ public class testForMe {
     public static void main( String[] args ) {
         FirstTask tasks = new FirstTask();
 
-        tasks.task25();
+        tasks.task21();
     }
 }
